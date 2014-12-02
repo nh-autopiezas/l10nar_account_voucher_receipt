@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <report 
+            id="l10nar_voucher_report"
+            model="account.voucher"
+            string="Account Voucher Receipt"
+            report_type="qweb-html"
+            name="l10nar_account_voucher_receipt.report_voucher"
+            file="l10nar_account_voucher_receipt.report_voucher"
+            attachment_use="True"
+            attachment="(object.state in ('proforma','posted')) and ('REC'+(object.number or '').replace('/','')+'.pdf')"
+        />
+
+    </data>
+</openerp>

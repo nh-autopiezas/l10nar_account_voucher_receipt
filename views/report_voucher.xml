@@ -38,10 +38,6 @@
                     <strong>Memoria:</strong>
                     <p t-field="o.name"/>
                 </div>
-                <div class="col-xs-3" t-if="o.partner_id.debit">
-                    <strong>Saldo</strong>
-                    <p t-field="o.partner_id.debit"/>
-                </div>
             </div>
             <div class="row mt32 mb32">
 		<br />
@@ -54,18 +50,25 @@
                         <th>Factura del proveedor</th>
                         <th>Fecha factura del proveedor</th>
                         <th class="text-right">Monto Factura Proveedor</th>
-                        <th class="text-right">Monto Pagado</th>
+                        <th class="text-right">Monto de la Factura que se Paga</th>
                     </tr>
                 </thead>
                 <tbody class="voucher_tbody">
                     <tr t-foreach="o.line_ids" t-as="l">
-                        <td><span t-field="l.move_line_id.name"/></td>
-                        <td><span t-field="l.date_original"/></td>
-                        <td class="text-right">
+                        <td t-if="l.amount != 0.00 and l.type == 'cr'">Saldo pagos anteriores</td>
+                        <td t-if="l.amount != 0.00 and l.type == 'dr'"><span t-field="l.move_line_id.name"/></td>
+                        <td t-if="l.amount != 0.00"><span t-field="l.date_original"/></td>
+                        <td t-if="l.amount != 0.00 and l.type =='dr'" class="text-right">
                             <span t-field="l.amount_original">$</span>
                         </td>
-                        <td class="text-right">
-                            <span t-field="l.amount">$</span>
+                        <td t-if="l.amount != 0.00 and l.type =='cr'" class="text-right">
+                            <span ></span>
+                        </td>
+                        <td t-if="l.amount != 0.00 and l.type == 'cr'" class="text-right">
+                            <span t-field="l.amount">A favor</span>
+                        </td>
+                        <td t-if="l.amount != 0.00 and l.type == 'dr'" class="text-right">
+                            <span t-if="l.type == 'dr'" t-field="l.amount" t-field-options='{"widget": "monetary", "display_currency": "o.currency_id"}'/>
                         </td>
                     </tr>
                 </tbody>
@@ -111,7 +114,103 @@
                     </table>
                 </div>
 	     </div>
+
+            <div class="row" t-if="o.issued_check_ids">
+                <div class="col-xs-6">
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <th>Cheque</th>
+                                <th class="text-left">Banco</th>
+                                <th class="text-right">Fecha</th>
+                                <th class="text-right">Importe</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="o.issued_check_ids" t-as="t">
+                                <td><span t-field="t.number"/></td>
+                                <td><span t-field="t.bank_id.name"/></td>
+                                <td class="text-right">
+                                    <span t-field="t.issue_date" />
+                                </td>
+                                <td class="text-right">
+                                    <span t-field="t.amount"
+                                        t-field-options='{"widget": "monetary", "display_currency": "o.currency_id"}'/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+	     </div>
+
+             <div class="row" t-if="o.partner_id.debit > 0">
+		<br />
+		<br />
+		<table class="table table-condensed">
+		     <tbody>
+			<tr>
+			  <td class="text-left">
+	                    <span>Saldo a favor del proveedor </span>
+			  </td>
+			  <td />
+			  <td class="text-right">
+				<span t-field="o.partner_id.debit" t-field-options='{"widget": "monetary","display_currency":"o.currency_id"}'/>
+			  </td>
+			  <td class="text-left">
+				<span>
+					Correspondiente a saldos de facturas anteriores. Si desea conocer el detalle del saldo por favor solicite el listado de la  cuenta corriente del proveedor.
+				</span>
+			  </td>
+			  <td />
+			  <td />
+			</tr>		
+		     </tbody>
+		</table>
+             </div>
+
+             <div class="row" >
+		<table class="table table-condensed">
+		     <tbody>
+			<tr>
+			  <td class="text-left">
+	                    <strong>Instrucciones para comprender el recibo</strong>
+			  </td>
+			</tr>
+			<tr>
+			  <td class="text-left">
+				<span>
+					La columna factura del proveedor indica que nro. de factura del proveedor se esta pagando. La columna fecha de la factura del proveedor indica la fecha de la factura que se esta pagando. La columna monto de la factura del proveedor indica el monto original de la factura del proveedor y la columna monto de la factura que se paga indica el monto que se esta pagando de la factura del proveedor.
+				</span>
+			  </td>
+			</tr>		
+			<tr>
+			  <td class="text-left">
+				<span>
+					La columna total pagado indica el total que se esta pagando en el presente recibo.
+				</span>
+			  </td>
+			</tr>		
+			<tr>
+			  <td class="text-left">
+				<span>
+					En el caso de realizarse pago con cheques, los mismos son detallados en el presente recibo.
+				</span>
+			  </td>
+			</tr>		
+		     </tbody>
+		</table>
+             </div>
 	<!--
+            <div class="row" t-if="o.tax_line">
+                <div class="col-xs-6">
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <th>IVA</th>
+                                <th class="text-right">Base</th>
+                                <th class="text-right">Monto</th>
+                            </tr>
+	
             <div class="row" t-if="o.tax_line">
                 <div class="col-xs-6">
                     <table class="table table-condensed">
